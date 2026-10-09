@@ -1,0 +1,118 @@
+<!doctype html>
+<!-- Renders the Figma Community cover from the real dist/ui.html. Serve the plugin folder with
+     `python3 -m http.server 8765 --bind 127.0.0.1`, open /docs/cover.html and capture 1920 × 1080. -->
+<meta charset="utf-8">
+<title>Print Kit cover</title>
+<link rel="stylesheet" href="../src/ui/inter.css">
+<style>
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 160px;
+    font-family: Inter, system-ui, sans-serif;
+    color: #2e2e2e;
+    background: #f4efe6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .copy { width: 860px; }
+
+  .copy img { display: block; width: 144px; height: 144px; margin-bottom: 56px; filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.15)); }
+
+  h1 { margin: 0 0 32px; font-size: 84px; line-height: 96px; font-weight: 600; letter-spacing: -0.02em; }
+
+  p { margin: 0; font-size: 36px; line-height: 50px; font-weight: 400; color: #6b6760; }
+
+  .points { display: flex; gap: 16px; margin: 48px 0 0; padding: 0; list-style: none; }
+
+  .points li { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 22px 0 16px; border: 1.5px solid rgba(46, 46, 46, 0.18); border-radius: 26px; white-space: nowrap; font-size: 24px; font-weight: 500; }
+
+  .points li::before { content: ""; width: 22px; height: 22px; background: #2e2e2e; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+
+  /* The plugin window at 1.4x, framed by crop marks like the icon. */
+  .stage { position: relative; width: 504px; }
+
+  .window { width: 360px; overflow: hidden; border-radius: 8px; background: #fff; box-shadow: 0 2px 14px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.15); transform: scale(1.4); transform-origin: top left; }
+
+  .scaled { width: 504px; }
+
+  iframe { display: block; width: 360px; height: 560px; border: 0; }
+
+  .mark { position: absolute; background: #2e2e2e; }
+
+  .h { width: 48px; height: 3px; }
+
+  .v { width: 3px; height: 48px; }
+</style>
+
+<section class="copy">
+  <img src="icon.png" alt="">
+  <h1>Print-ready PDFs, made on your device</h1>
+  <p>Bleed, preflight and CMYK conversion run right inside Figma. No uploads, no account, no waiting for a server.</p>
+  <ul class="points">
+    <li>On your device</li>
+    <li>No uploads</li>
+    <li>No tracking</li>
+  </ul>
+</section>
+
+<div class="stage">
+  <div class="scaled" id="scaled"><div class="window"><iframe id="plugin" sandbox="allow-scripts"></iframe></div></div>
+  <span class="mark h" style="left:-72px;top:-2px"></span>
+  <span class="mark v" style="left:-2px;top:-72px"></span>
+  <span class="mark h" style="right:-72px;top:-2px"></span>
+  <span class="mark v" style="right:-2px;top:-72px"></span>
+  <span class="mark h" style="left:-72px;bottom:-2px"></span>
+  <span class="mark v" style="left:-2px;bottom:-72px"></span>
+  <span class="mark h" style="right:-72px;bottom:-2px"></span>
+  <span class="mark v" style="right:-2px;bottom:-72px"></span>
+</div>
+
+<script type="module">
+  // Figma's light theme tokens, as Figma injects them with themeColors.
+  const tokens = {
+    "--figma-color-bg": "#fff", "--figma-color-bg-brand": "#0d99ff", "--figma-color-bg-brand-hover": "#007be5", "--figma-color-bg-brand-pressed": "#007be5",
+    "--figma-color-bg-disabled": "#d9d9d9", "--figma-color-bg-hover": "#f5f5f5", "--figma-color-bg-secondary": "#f5f5f5", "--figma-color-bg-tertiary": "#e6e6e6",
+    "--figma-color-bg-selected": "#e5f4ff", "--figma-color-border": "#e6e6e6", "--figma-color-border-selected": "#0d99ff", "--figma-color-border-selected-strong": "#007be5",
+    "--figma-color-icon": "rgba(0,0,0,0.9)", "--figma-color-icon-secondary": "rgba(0,0,0,0.5)", "--figma-color-icon-tertiary": "rgba(0,0,0,0.3)", "--figma-color-icon-brand": "#0d99ff",
+    "--figma-color-text": "rgba(0,0,0,0.9)", "--figma-color-text-onbrand": "#fff", "--figma-color-text-secondary": "rgba(0,0,0,0.5)", "--figma-color-text-tertiary": "rgba(0,0,0,0.3)",
+  };
+  const style = Object.entries(tokens).map(([k, v]) => `${k}:${v}`).join(";");
+  const html = await fetch("../dist/ui.html").then((r) => r.text());
+  const frame = document.getElementById("plugin");
+  frame.srcdoc = html.replace("<html", `<html class="figma-light" style="${style}"`);
+
+  // A fake main thread: the Check tab for one A5 flyer, with typical findings.
+  const issues = [
+    { pageId: "1", nodeId: "11", nodeName: "Hero photo", code: "image-medium", severity: "warning", params: { ppi: 220, min: 300 }, fix: null },
+    { pageId: "1", nodeId: "12", nodeName: "Background", code: "edge-trim", severity: "warning", params: { sides: ["left", "top"] }, fix: "bleed" },
+    { pageId: "1", nodeId: "13", nodeName: "Divider", code: "line-thin", severity: "warning", params: { weight: 0.1, min: 0.25 }, fix: "stroke" },
+  ];
+  const reply = {
+    ready: () => ({
+      type: "init",
+      settings: {},
+      ui: { lang: "en", welcomed: true, width: 360, height: 640 },
+      command: "check",
+      profile: null,
+      colors: { black: "pure", mappings: [] },
+      selection: { selected: 1, frames: 1, printPages: 1, otherPages: 0, pageIds: ["1"] },
+      fileName: "Flyer",
+    }),
+    check: () => ({ type: "checked", pages: [{ id: "1", name: "Flyer A5" }], issues }),
+  };
+  window.addEventListener("message", (event) => {
+    const message = event.data && event.data.pluginMessage;
+    if (!message) return;
+    if (message.type === "resize") {
+      frame.style.height = `${message.height}px`;
+      document.getElementById("scaled").style.height = `${message.height * 1.4}px`;
+    }
+    if (reply[message.type]) frame.contentWindow.postMessage({ pluginMessage: reply[message.type]() }, "*");
+  });
+</script>

@@ -18,6 +18,7 @@
 - Ghostscript runs with `-dSAFER`. Any file it reads besides `/in.pdf` needs `--permit-file-read`.
 - `-dAutoRotatePages=/None` stays, or Ghostscript rotates pages it thinks are sideways.
 - Print pages store their geometry in plugin data `printkit:page`, in points, and crop mark groups carry `printkit:part`. Pages from other plugins are recognized by a slice whose name contains "trimbox".
+- `docs/cover.html` renders the 1920 × 1080 Community cover from the real `dist/ui.html`: serve the repo root and capture it to `docs/cover.png` after a UI change. `docs/listing.md` holds the publish dialog texts.
 - `docs/icon.svg` is the source of the icon: a beige iOS-style squircle (`#F4EFE6`), a dark gray P and four crop marks (`#2E2E2E`). Render `docs/icon.png` (1024 px) and `docs/icon-128.png` from it after a change.
 - The built-in profiles are colord's CC0 FOGRA39L and FOGRA47L, taken from Arch Linux's `colord` package. ECI profiles such as PSO Coated v3 may not be redistributed. Ship no Pantone, HKS or RAL values; they are licensed.
 
