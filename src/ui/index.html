@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Print Kit</title>
+    <style>
+      /*__CSS__*/
+    </style>
+  </head>
+  <body>
+    <header id="top">
+      <nav id="tabs" role="tablist"></nav>
+      <button id="settings-button" class="icon" type="button" popovertarget="settings"></button>
+    </header>
+    <p id="summary"></p>
+    <main id="panel" role="tabpanel"><div id="content"></div></main>
+    <footer id="footer">
+      <div id="status" role="status"></div>
+      <button id="primary" class="primary" type="button" aria-keyshortcuts="Enter"></button>
+    </footer>
+    <div id="grip" aria-hidden="true"></div>
+    <div id="settings" popover></div>
+    <div id="menu" class="menu" popover role="menu"></div>
+    <div id="suggestions" class="menu" popover="manual" role="listbox"></div>
+    <div id="tip" role="tooltip" hidden></div>
+    <dialog id="welcome"></dialog>
+    <input id="profile-file" type="file" accept=".icc,.icm" hidden />
+    <script>
+      /*__JS__*/
+    </script>
+  </body>
+</html>

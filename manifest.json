@@ -1,0 +1,52 @@
+{
+  "name": "Print Kit",
+  "id": "print-kit-local",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/ui.html",
+  "editorType": [
+    "figma"
+  ],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": [
+      "https://cdn.jsdelivr.net"
+    ],
+    "reasoning": "Downloads the Ghostscript color engine, which is checked against a pinned SHA-256 before it runs. No designs or personal data leave the computer."
+  },
+  "menu": [
+    {
+      "name": "Open Print Kit",
+      "command": "open"
+    },
+    {
+      "separator": true
+    },
+    {
+      "name": "Create print pages",
+      "command": "create"
+    },
+    {
+      "name": "Check pages",
+      "command": "check"
+    },
+    {
+      "name": "Colors",
+      "command": "colors"
+    },
+    {
+      "name": "Export print PDF",
+      "command": "export"
+    }
+  ],
+  "relaunchButtons": [
+    {
+      "command": "check",
+      "name": "Check for print"
+    },
+    {
+      "command": "export",
+      "name": "Export print PDF"
+    }
+  ]
+}

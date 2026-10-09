@@ -1,0 +1,5 @@
+.DS_Store
+node_modules/
+
+# Print for Figma and Printery bundles, reviewed locally and not ours to redistribute
+references/

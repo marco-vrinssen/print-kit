@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Print Kit harness</title>
+    <style>
+      body { margin: 0; padding: 24px; background: #e5e5e5; font: 12px sans-serif; color: #333; }
+      body.dark { background: #1e1e1e; color: #ccc; }
+      iframe { display: block; border: 0; border-radius: 8px; box-shadow: 0 2px 14px rgba(0, 0, 0, 0.15); }
+      pre { max-height: 200px; overflow: auto; }
+    </style>
+  </head>
+  <body>
+    <!-- Hosts dist/ui.html the way Figma does: a sandboxed srcdoc iframe with the theme tokens
+         inlined, plus a fake main thread. Query: ?dark, ?lang=de, ?tab=colors, ?welcome, ?gradient. -->
+    <iframe id="plugin" sandbox="allow-scripts allow-downloads" width="360" height="640"></iframe>
+    <pre id="log"></pre>
+    <script type="module">
+      const params = new URLSearchParams(location.search);
+      const dark = params.has("dark");
+      document.body.classList.toggle("dark", dark);
+      const light = {
+        "--figma-color-bg": "#fff", "--figma-color-bg-brand": "#0d99ff", "--figma-color-bg-brand-hover": "#007be5", "--figma-color-bg-brand-pressed": "#007be5",
+        "--figma-color-bg-disabled": "#d9d9d9", "--figma-color-bg-hover": "#f5f5f5", "--figma-color-bg-secondary": "#f5f5f5", "--figma-color-bg-tertiary": "#e6e6e6",
+        "--figma-color-bg-selected": "#e5f4ff", "--figma-color-bg-danger": "#f24822",
+        "--figma-color-border": "#e6e6e6", "--figma-color-border-disabled": "#e6e6e6", "--figma-color-border-selected": "#0d99ff", "--figma-color-border-selected-strong": "#007be5",
+        "--figma-color-icon": "rgba(0,0,0,0.9)", "--figma-color-icon-secondary": "rgba(0,0,0,0.5)", "--figma-color-icon-tertiary": "rgba(0,0,0,0.3)", "--figma-color-icon-brand": "#0d99ff",
+        "--figma-color-icon-danger": "#f24822", "--figma-color-icon-warning": "#ffa629", "--figma-color-icon-success": "#14ae5c", "--figma-color-icon-onbrand": "#fff",
+        "--figma-color-text": "rgba(0,0,0,0.9)", "--figma-color-text-danger": "#dc3412", "--figma-color-text-disabled": "rgba(0,0,0,0.3)", "--figma-color-text-onbrand": "#fff",
+        "--figma-color-text-ondisabled": "#fff", "--figma-color-text-secondary": "rgba(0,0,0,0.5)", "--figma-color-text-tertiary": "rgba(0,0,0,0.3)",
+      };
+      const darkTokens = Object.assign({}, light, {
+        "--figma-color-bg": "#2c2c2c", "--figma-color-bg-brand": "#0c8ce9", "--figma-color-bg-brand-hover": "#0a6dc2", "--figma-color-bg-brand-pressed": "#0a6dc2",
+        "--figma-color-bg-disabled": "#757575", "--figma-color-bg-hover": "#383838", "--figma-color-bg-secondary": "#383838", "--figma-color-bg-tertiary": "#444",
+        "--figma-color-bg-selected": "#4a5878", "--figma-color-border": "#444", "--figma-color-border-disabled": "#444", "--figma-color-border-selected": "#0c8ce9",
+        "--figma-color-border-selected-strong": "#7cc4f8", "--figma-color-icon": "#fff", "--figma-color-icon-secondary": "rgba(255,255,255,0.7)", "--figma-color-icon-tertiary": "rgba(255,255,255,0.4)",
+        "--figma-color-icon-brand": "#7cc4f8", "--figma-color-icon-warning": "#f7d15f",
+        "--figma-color-text": "#fff", "--figma-color-text-danger": "#fca397", "--figma-color-text-disabled": "rgba(255,255,255,0.4)", "--figma-color-text-ondisabled": "#2c2c2c",
+        "--figma-color-text-secondary": "rgba(255,255,255,0.7)", "--figma-color-text-tertiary": "rgba(255,255,255,0.4)",
+      });
+      const tokens = Object.entries(dark ? darkTokens : light).map(([k, v]) => `${k}:${v}`).join(";");
+      const html = await fetch("../dist/ui.html").then((r) => r.text());
+      const frame = document.getElementById("plugin");
+      frame.srcdoc = html.replace("<html", `<html class="${dark ? "figma-dark" : "figma-light"}" style="${tokens}"`);
+      const log = (line) => (document.getElementById("log").textContent += line + "\n");
+      const toUi = (message) => frame.contentWindow.postMessage({ pluginMessage: message }, "*");
+
+      // ?gradient plays the 1000 × 1000 gradient frame from the bug report instead of the A5 page.
+      const gradientCase = params.has("gradient");
+      const fixture = new Uint8Array(await fetch(gradientCase ? "fixtures/figma-gradient.pdf" : "fixtures/figma-a5.pdf").then((r) => r.arrayBuffer()));
+      const pages = [
+        { id: "1", name: "A5 · Page 1", w: 419.528, h: 595.276, unit: "mm", source: "printkit" },
+        { id: "2", name: "A5 · Page 2", w: 419.528, h: 595.276, unit: "mm", source: "printkit" },
+        { id: "3", name: "Flyer back", w: 419.528, h: 595.276, unit: "mm", source: "slice" },
+      ];
+      const selection = { selected: 0, frames: 0, printPages: 0, otherPages: 0, pageIds: pages.map((p) => p.id) };
+      const thumb = (label) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = 68;
+        canvas.height = 96;
+        const g = canvas.getContext("2d");
+        g.fillStyle = "#fff";
+        g.fillRect(0, 0, 68, 96);
+        g.fillStyle = "#e30613";
+        g.fillRect(8, 8, 52, 30);
+        g.fillStyle = "#222";
+        g.fillRect(8, 46, 40, 4);
+        g.fillRect(8, 54, 30, 4);
+        return new Promise((resolve) => canvas.toBlob((blob) => blob.arrayBuffer().then((b) => resolve(new Uint8Array(b)))));
+      };
+      const scans = {
+        plain: {
+          colors: [{ hex: "000000", count: 9, kinds: ["fill", "text"] }, { hex: "E30613", count: 3, kinds: ["fill"] }, { hex: "0000FF", count: 1, kinds: ["text"] }, { hex: "D9D9D9", count: 1, kinds: ["fill"] }],
+          gradients: [{ type: "linear", count: 1, stops: [{ hex: "FF9966", position: 0, alpha: 1 }, { hex: "FF66FF", position: 0.331, alpha: 1 }, { hex: "A666FF", position: 1, alpha: 1 }] }],
+          images: 2,
+        },
+      };
+      scans.plain.colors.push({ hex: "FF9966", count: 1, kinds: ["gradient"] }, { hex: "FF66FF", count: 1, kinds: ["gradient"] }, { hex: "A666FF", count: 1, kinds: ["gradient"] });
+      const issues = [
+        { pageId: "1", nodeId: "11", nodeName: "Hero image", code: "image-low", severity: "error", params: { ppi: 96, min: 300 }, fix: null },
+        { pageId: "1", nodeId: "12", nodeName: "Background", code: "edge-trim", severity: "warning", params: { sides: ["left", "top"] }, fix: "bleed" },
+        { pageId: "1", nodeId: "13", nodeName: "Footnote", code: "text-small", severity: "warning", params: { size: 5, min: 6 }, fix: null },
+        { pageId: "2", nodeId: "21", nodeName: "Divider", code: "line-thin", severity: "warning", params: { weight: 0.1, min: 0.25 }, fix: "stroke" },
+        { pageId: "2", nodeId: "22", nodeName: "Card", code: "effects", severity: "info", params: {}, fix: null },
+      ];
+
+      window.addEventListener("message", async (event) => {
+        const message = event.data && event.data.pluginMessage;
+        if (!message || event.source !== frame.contentWindow) return;
+        log("main <- " + message.type + (message.text ? ": " + message.text : ""));
+        switch (message.type) {
+          case "ready":
+            return toUi({
+              type: "init",
+              settings: {},
+              ui: { lang: params.get("lang") || "auto", welcomed: !params.has("welcome") },
+              command: params.get("tab") || "",
+              profile: null,
+              colors: { black: "pure", mappings: [] },
+              selection,
+              fileName: "Harness",
+            });
+          case "resize":
+            frame.width = message.width;
+            frame.height = message.height;
+            return;
+          case "check":
+            return setTimeout(() => toUi({ type: "checked", pages: pages.map(({ id, name }) => ({ id, name })), issues: issues.slice() }), 200);
+          case "fix":
+            issues.splice(issues.findIndex((i) => i.nodeId === message.nodeId), 1);
+            return toUi({ type: "fixed", ok: true });
+          case "scan":
+            return setTimeout(() => toUi(Object.assign({ type: "scanned" }, scans.plain)), 150);
+          case "pages":
+            return toUi({ type: "pages", pages: pages.map((p) => Object.assign({}, p)) });
+          case "thumbs":
+            for (const id of message.ids) toUi({ type: "thumb", id, bytes: await thumb(id) });
+            return;
+          case "export":
+            message.ids.forEach((id, index) => {
+              const [w, h] = gradientCase ? [1000, 1000] : [471.528, 647.276];
+              const boxes = gradientCase ? { media: [0, 0, w, h], trim: [0, 0, w, h], bleed: [0, 0, w, h] } : { media: [0, 0, w, h], trim: [26, 26, w - 26, h - 26], bleed: [17.496, 17.496, w - 17.496, h - 17.496] };
+              toUi({ type: "export-page", index, total: message.ids.length, name: pages.find((p) => p.id === id).name, width: w, height: h, bytes: fixture, boxes });
+            });
+            return toUi({ type: "export-end", total: message.ids.length });
+          case "create":
+            return toUi({ type: "created", count: message.settings.pages });
+          case "apply":
+            return toUi({ type: "applied", updated: 0, prepared: 1, skipped: 0 });
+          case "load-profile":
+            return toUi({ type: "profile", profile: null });
+        }
+      });
+      window.toUi = toUi;
+      window.setSelection = (change) => toUi({ type: "selection", selection: Object.assign({}, selection, change) });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "print-kit",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Figma plugin for print-ready PDFs: bleed, crop marks, preflight and local CMYK conversion",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node check.mjs",
+    "typecheck": "tsc -p jsconfig.json"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.141.0",
+    "@okathira/ghostpdl-wasm": "^1.1.0",
+    "esbuild": "^0.25.12",
+    "fflate": "^0.8.3",
+    "pdf-lib": "^1.17.1",
+    "typescript": "^5.9.3"
+  }
+}

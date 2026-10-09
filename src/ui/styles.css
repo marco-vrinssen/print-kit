@@ -1,0 +1,485 @@
+/* Figma UI3 by hand: Figma injects the --figma-color tokens with themeColors, 11 px Inter at
+   weights 450 and 550, 24 px controls, 16 px side padding, hairlines between sections. */
+
+* { box-sizing: border-box; }
+
+html, body { height: 100%; margin: 0; }
+
+.figma-dark { color-scheme: dark; }
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font: 450 11px/16px Inter, system-ui, sans-serif;
+  letter-spacing: 0.005em;
+  color: var(--figma-color-text);
+  background: var(--figma-color-bg);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  cursor: default;
+}
+
+[hidden] { display: none !important; }
+
+h2, h3, p { margin: 0; }
+
+h2, h3 { font-size: 11px; line-height: 16px; font-weight: 550; }
+
+h2 { flex: 1; }
+
+h3 { color: var(--figma-color-text-secondary); }
+
+svg { display: block; flex: none; }
+
+input, button { margin: 0; font: inherit; letter-spacing: inherit; color: inherit; }
+
+ul { margin: 0; padding: 0; list-style: none; }
+
+.note, .quiet-text, .legend-text { color: var(--figma-color-text-secondary); }
+
+.strong { font-weight: 550; color: var(--figma-color-text); }
+
+.quiet-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Header, summary, panel, footer */
+
+#top { display: flex; align-items: center; gap: 4px; padding: 8px 8px 8px 12px; border-bottom: 1px solid var(--figma-color-border); }
+
+#tabs { display: flex; flex: 1; gap: 2px; min-width: 0; }
+
+[role=tab] { display: flex; align-items: center; gap: 4px; font-weight: 550; color: var(--figma-color-text-secondary); }
+
+[role=tab]:hover { color: var(--figma-color-text); }
+
+[role=tab][aria-selected=true] { color: var(--figma-color-text); background: var(--figma-color-bg-secondary); }
+
+[role=tab]:focus-visible { border-color: var(--figma-color-border-selected); }
+
+.badge {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+  color: var(--figma-color-text);
+  background: var(--figma-color-bg-tertiary);
+}
+
+.badge.error { color: #fff; background: var(--figma-color-bg-danger, #f24822); }
+
+#summary { padding: 8px 16px; color: var(--figma-color-text-secondary); border-bottom: 1px solid var(--figma-color-border); }
+
+#summary:empty { display: none; }
+
+#panel { flex: 1; min-height: 0; overflow-y: auto; }
+
+#panel::-webkit-scrollbar { width: 12px; }
+
+#panel::-webkit-scrollbar-track { background: transparent; }
+
+#panel::-webkit-scrollbar-thumb { border: 3px solid transparent; border-radius: 6px; background-color: var(--figma-color-icon-tertiary); background-clip: padding-box; }
+
+#content { padding-bottom: 4px; }
+
+#footer { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-top: 1px solid var(--figma-color-border); }
+
+#status { display: flex; flex: 1; flex-direction: column; gap: 4px; min-width: 0; color: var(--figma-color-text-secondary); }
+
+#status span { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+progress { width: 100%; height: 2px; border: 0; appearance: none; background: var(--figma-color-bg-tertiary); }
+
+progress::-webkit-progress-bar { background: var(--figma-color-bg-tertiary); }
+
+progress::-webkit-progress-value { background: var(--figma-color-bg-brand); }
+
+#primary { display: flex; align-items: center; gap: 8px; max-width: 65%; }
+
+#primary span { overflow: hidden; text-overflow: ellipsis; }
+
+#primary kbd { font: inherit; opacity: 0.6; }
+
+#grip {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+  background: linear-gradient(135deg, transparent 55%, var(--figma-color-icon-tertiary) 55% 62%, transparent 62% 76%, var(--figma-color-icon-tertiary) 76% 83%, transparent 83%);
+}
+
+/* Sections */
+
+.section { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--figma-color-border); }
+
+#content > .section:first-child, .block + .section { border-top: 0; }
+
+.section-head { display: flex; align-items: center; gap: 4px; min-height: 16px; }
+
+.block { padding: 12px 16px 0; }
+
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+.grid.three { grid-template-columns: repeat(3, 1fr); }
+
+.stack { display: flex; flex-direction: column; gap: 8px; }
+
+.labelled { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+.label { display: flex; align-items: center; gap: 2px; height: 16px; color: var(--figma-color-text-secondary); }
+
+.empty { padding: 16px; color: var(--figma-color-text-secondary); }
+
+.notice { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px; margin: 12px 16px 0; padding: 8px; border-radius: 6px; background: var(--figma-color-bg-secondary); }
+
+.notice > p, .notice > div { flex: 1 1 180px; min-width: 0; }
+
+.notice > svg { margin: -4px -4px -4px -4px; }
+
+.notice .actions { display: flex; gap: 8px; margin-top: 8px; }
+
+.notice + .section { border-top: 0; }
+
+.done { color: var(--figma-color-icon-success, #14ae5c); }
+
+/* Controls */
+
+.field { width: 100%; height: 24px; padding: 0 7px; border: 1px solid transparent; border-radius: 5px; background: var(--figma-color-bg-secondary); outline: none; }
+
+.field:hover { border-color: var(--figma-color-border); }
+
+.field:focus, .field:focus-within { border-color: var(--figma-color-border-selected); }
+
+.input { display: flex; align-items: center; gap: 4px; min-width: 0; }
+
+.bare { flex: 1; width: 100%; min-width: 0; height: 22px; padding: 0; border: 0; outline: none; background: none; }
+
+.bare::placeholder { color: var(--figma-color-text-tertiary); }
+
+.affix { flex: none; color: var(--figma-color-text-tertiary); }
+
+button { height: 24px; padding: 0 8px; border: 1px solid transparent; border-radius: 5px; background: none; white-space: nowrap; outline: none; cursor: default; }
+
+.large { height: 32px; }
+
+.primary { font-weight: 550; color: var(--figma-color-text-onbrand); background: var(--figma-color-bg-brand); }
+
+.primary:hover { background: var(--figma-color-bg-brand-hover); }
+
+.primary:active { background: var(--figma-color-bg-brand-pressed); }
+
+.primary:focus-visible { border-color: var(--figma-color-border-selected-strong); box-shadow: inset 0 0 0 1px var(--figma-color-bg); }
+
+.primary:disabled { color: var(--figma-color-text-ondisabled); background: var(--figma-color-bg-disabled); }
+
+.secondary { flex: none; font-weight: 550; border-color: var(--figma-color-border); }
+
+.secondary:hover { background: var(--figma-color-bg-hover); }
+
+.secondary:focus-visible { border-color: var(--figma-color-border-selected); }
+
+.icon { flex: none; width: 24px; padding: 0; color: var(--figma-color-icon-secondary); }
+
+.icon:hover { color: var(--figma-color-icon); background: var(--figma-color-bg-hover); }
+
+.icon:focus-visible { border-color: var(--figma-color-border-selected); }
+
+/* A busy button keeps its size and shows Figma's UI3 spinner, a 270 degree arc turning once a
+   second. It waits 150 ms, so quick work never flashes it. */
+button.loading, button.loading:disabled { position: relative; color: transparent; pointer-events: none; }
+
+button.loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 16px;
+  height: 16px;
+  margin: auto;
+  background: var(--figma-color-icon-onbrand, #fff);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none'%3E%3Cpath d='M8 2.5A5.5 5.5 0 1 1 2.5 8' stroke='black' stroke-linecap='round'/%3E%3C/svg%3E") center / 16px no-repeat;
+  opacity: 0;
+  animation: spin 1s linear infinite, appear 0s linear 0.15s forwards;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes appear { to { opacity: 1; } }
+
+.help { display: inline-flex; width: 16px; height: 16px; padding: 0; border: 0; color: var(--figma-color-icon-tertiary); overflow: visible; }
+
+.help svg { margin: -4px; }
+
+.help:hover, .help:focus-visible { color: var(--figma-color-icon); }
+
+.check { display: flex; align-items: center; gap: 8px; min-height: 24px; }
+
+.check input, .page input {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid var(--figma-color-icon);
+  border-radius: 4px;
+  appearance: none;
+}
+
+.check input:checked, .page input:checked {
+  border-color: var(--figma-color-bg-brand);
+  background: var(--figma-color-bg-brand) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='m4 8 2.5 2.5L12 5' fill='none' stroke='white'/%3E%3C/svg%3E") center / 16px no-repeat;
+}
+
+.check input:focus-visible, .page input:focus-visible { outline: 2px solid var(--figma-color-border-selected); outline-offset: 1px; }
+
+/* Segmented control: radios underneath, one thumb that sits on the checked segment. */
+.segmented { position: relative; display: grid; flex: none; grid-auto-columns: 1fr; grid-auto-flow: column; padding: 2px; border-radius: 6px; background: var(--figma-color-bg-secondary); }
+
+.segmented::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: calc((100% - 4px) / var(--count));
+  border-radius: 4px;
+  background: var(--figma-color-bg);
+  box-shadow: 0 0 0 1px var(--figma-color-border);
+  transform: translateX(calc(var(--index) * 100%));
+}
+
+.segmented[data-checked=false]::before { display: none; }
+
+.segmented label { position: relative; min-width: 0; }
+
+.segmented input { position: absolute; inset: 0; margin: 0; opacity: 0; }
+
+.segmented span { display: flex; align-items: center; justify-content: center; height: 20px; padding: 0 6px; overflow: hidden; border-radius: 4px; white-space: nowrap; text-overflow: ellipsis; color: var(--figma-color-text-secondary); }
+
+.segmented span svg { margin: -2px -4px; }
+
+.segmented input:checked + span { color: var(--figma-color-text); }
+
+.segmented input:focus-visible + span { outline: 2px solid var(--figma-color-border-selected); outline-offset: -2px; }
+
+.section > .segmented, .block > .segmented { width: 100%; }
+
+.select { display: flex; align-items: center; padding-right: 0; text-align: left; }
+
+.select span { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.select .chevron { margin-left: auto; color: var(--figma-color-icon-secondary); }
+
+.select:focus:not(:focus-visible) { border-color: transparent; }
+
+.disclosure { display: flex; align-self: flex-start; align-items: center; margin-left: -8px; padding: 0 8px 0 0; font-weight: 550; }
+
+.disclosure svg { color: var(--figma-color-icon-secondary); }
+
+.turned { transform: rotate(90deg); }
+
+/* Figma's menus are dark in both themes, with a blue highlight and a check on the current item. */
+.menu {
+  inset: auto;
+  min-width: 160px;
+  max-width: calc(100vw - 16px);
+  margin: 0;
+  padding: 8px;
+  border: 0;
+  border-radius: 13px;
+  color: #fff;
+  background: #1e1e1e;
+  box-shadow: 0 5px 17px rgba(0, 0, 0, 0.2), 0 2px 7px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.menu [role=menuitemradio], .menu [role=option] { display: flex; align-items: center; width: 100%; height: 24px; padding: 0 8px 0 0; border-radius: 5px; color: inherit; text-align: left; }
+
+.menu [role=option] { padding-left: 8px; }
+
+.menu [role=menuitemradio]::before { content: ''; flex: none; width: 24px; height: 24px; }
+
+.menu [aria-checked=true]::before {
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='m8 12 2.5 2.5L16 9' fill='none' stroke='black'/%3E%3C/svg%3E") center / 24px no-repeat;
+}
+
+.menu [role=menuitemradio]:hover, .menu [role=menuitemradio]:focus, .menu [aria-selected=true], .menu [role=option]:hover { background: var(--figma-color-bg-brand); }
+
+.menu [role=separator] { height: 1px; margin: 8px 0; background: rgba(255, 255, 255, 0.1); }
+
+.menu-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.menu-detail { margin-left: auto; padding-left: 16px; white-space: nowrap; color: rgba(255, 255, 255, 0.5); }
+
+#tip {
+  position: fixed;
+  z-index: 10;
+  max-width: 240px;
+  padding: 4px 8px;
+  border-radius: 5px;
+  color: #fff;
+  background: #1e1e1e;
+  pointer-events: none;
+}
+
+#settings { inset: 40px 8px auto auto; width: 248px; margin: 0; padding: 12px; border: 1px solid var(--figma-color-border); border-radius: 13px; color: var(--figma-color-text); background: var(--figma-color-bg); box-shadow: 0 2px 14px rgba(0, 0, 0, 0.15); }
+
+#settings:popover-open { display: flex; flex-direction: column; gap: 12px; }
+
+#settings .secondary { align-self: flex-start; }
+
+dialog { width: calc(100% - 32px); max-width: 360px; padding: 16px; border: 1px solid var(--figma-color-border); border-radius: 13px; color: var(--figma-color-text); background: var(--figma-color-bg); box-shadow: 0 2px 14px rgba(0, 0, 0, 0.15); }
+
+dialog::backdrop { background: rgba(0, 0, 0, 0.3); }
+
+dialog[open] { display: flex; flex-direction: column; gap: 12px; }
+
+dialog h2 { font-size: 13px; line-height: 24px; }
+
+.steps { display: flex; flex-direction: column; gap: 12px; }
+
+.steps li { display: flex; align-items: center; gap: 12px; }
+
+.steps li > span { display: flex; flex-direction: column; }
+
+/* Create */
+
+.tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+
+.tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-width: 0; height: 60px; padding: 4px 2px; white-space: normal; }
+
+.tile:hover { background: var(--figma-color-bg-hover); }
+
+.tile:focus-visible { border-color: var(--figma-color-border-selected); }
+
+.tile[aria-pressed=true] { border-color: var(--figma-color-border-selected); background: var(--figma-color-bg-selected, rgba(13, 153, 255, 0.1)); }
+
+.tile-shape { flex: none; border: 1px solid var(--figma-color-icon-secondary); border-radius: 1px; }
+
+.tile-shape.more { width: 14px; height: 20px; border-style: dashed; }
+
+.tile[aria-pressed=true] .tile-shape { border-color: var(--figma-color-icon-brand, #0d99ff); }
+
+.tile-label { display: -webkit-box; max-width: 100%; overflow: hidden; line-height: 12px; text-align: center; overflow-wrap: anywhere; hyphens: auto; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+.diagram-row { display: flex; align-items: center; gap: 12px; }
+
+.diagram * { shape-rendering: crispEdges; }
+
+.d-bleed { fill: rgba(242, 72, 34, 0.14); stroke: rgba(242, 72, 34, 0.6); }
+
+.d-trim { fill: var(--figma-color-bg); stroke: var(--figma-color-icon-secondary); }
+
+.d-safe { fill: none; stroke: #0d99ff; stroke-dasharray: 2 2; }
+
+.d-mark { fill: none; stroke: var(--figma-color-icon); }
+
+.legend { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+.legend li { display: flex; align-items: flex-start; gap: 8px; }
+
+.legend-title, .legend-text { display: block; }
+
+.key { flex: none; width: 12px; height: 12px; margin-top: 2px; border-radius: 2px; }
+
+.key-trim { background: var(--figma-color-bg); box-shadow: inset 0 0 0 1px var(--figma-color-icon-secondary); }
+
+.key-bleed { background: rgba(242, 72, 34, 0.14); box-shadow: inset 0 0 0 1px rgba(242, 72, 34, 0.6); }
+
+.key-safe { border: 1px dashed #0d99ff; }
+
+.key-marks { background: linear-gradient(var(--figma-color-icon), var(--figma-color-icon)) 6px 0 / 1px 5px no-repeat, linear-gradient(var(--figma-color-icon), var(--figma-color-icon)) 0 6px / 5px 1px no-repeat; }
+
+/* Check */
+
+.group { display: flex; flex-direction: column; gap: 2px; }
+
+.issue-row { display: flex; align-items: flex-start; gap: 4px; }
+
+.issue-main { display: flex; flex: 1; align-items: flex-start; min-width: 0; height: auto; margin-left: -6px; padding: 0 4px 0 0; text-align: left; white-space: normal; }
+
+.issue-main:hover { background: var(--figma-color-bg-hover); }
+
+.issue-main:focus-visible { border-color: var(--figma-color-border-selected); }
+
+.issue-text { display: flex; flex-direction: column; min-width: 0; padding: 4px 0; }
+
+.issue-row > button:not(.issue-main) { margin-top: 0; }
+
+.severity.error { color: var(--figma-color-icon-danger, #f24822); }
+
+.severity.warning { color: var(--figma-color-icon-warning, #e5a000); }
+
+.severity.info { color: var(--figma-color-icon-secondary); }
+
+.explain { display: flex; flex-direction: column; gap: 4px; padding: 0 28px 8px 18px; color: var(--figma-color-text-secondary); user-select: text; }
+
+.passed { display: flex; flex-direction: column; }
+
+.passed li { display: flex; align-items: center; color: var(--figma-color-text-secondary); }
+
+.passed svg { margin: -4px 0 -4px -6px; color: var(--figma-color-icon-success, #14ae5c); }
+
+/* Colors */
+
+.colors { display: flex; flex-direction: column; gap: 4px; }
+
+.color { display: flex; flex-direction: column; gap: 8px; padding: 4px 0; }
+
+.color-head, .gradient { display: flex; align-items: center; gap: 8px; }
+
+.swatch, .bars { display: flex; flex: none; height: 24px; overflow: hidden; border: 1px solid var(--figma-color-border); border-radius: 4px; }
+
+.swatch { width: 24px; }
+
+.swatch span, .bars span { flex: 1; }
+
+.bars { flex-direction: column; width: 56px; }
+
+.color-name { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+
+.mode { flex: none; width: 128px; }
+
+.color-detail { display: flex; flex-direction: column; gap: 8px; padding-left: 32px; }
+
+.cmyk { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+
+.flag { display: flex; align-items: center; color: var(--figma-color-text-secondary); }
+
+.flag svg { margin: -4px 0 -4px -6px; }
+
+/* Export */
+
+.pages { display: flex; flex-direction: column; }
+
+.page { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-radius: 5px; }
+
+.thumb { display: flex; flex: none; align-items: center; justify-content: center; width: 32px; height: 40px; overflow: hidden; border-radius: 2px; background: var(--figma-color-bg-secondary); }
+
+.thumb img { max-width: 100%; max-height: 100%; }
+
+.grip { color: var(--figma-color-icon-tertiary); cursor: grab; }
+
+.page.dragging { opacity: 0.4; }
+
+.page.drop-before { box-shadow: 0 -2px 0 var(--figma-color-border-selected); }
+
+.page.drop-after { box-shadow: 0 2px 0 var(--figma-color-border-selected); }
+
+/* Introduction pictures */
+
+.a-error { fill: var(--figma-color-icon-danger, #f24822); }
+
+.a-warning { fill: var(--figma-color-icon-warning, #e5a000); }
+
+.a-ok { fill: none; stroke: var(--figma-color-icon-success, #14ae5c); stroke-width: 1.5; }
+
+.a-line { fill: var(--figma-color-bg-tertiary); }
+
+@media (prefers-reduced-motion: reduce) {
+  button.loading::after { animation-duration: 3s, 0s; }
+}
