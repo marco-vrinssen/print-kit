@@ -11,24 +11,29 @@ Print Kit
 ## Tagline
 
 ```text
-Print-ready PDFs made on your device: bleed, preflight and CMYK. No uploads, no account.
+Free print-ready PDFs, made privately on your device. No uploads, no account, no limits.
 ```
 
 ## Description
 
 ```text
-Print Kit turns Figma frames into print-ready PDFs, and it does all of it on your device. Your designs never leave your computer: no uploads, no account, no tracking, and no waiting for a server.
+Print Kit is free and private. It turns Figma frames into print-ready PDFs right on your device: nothing is uploaded, nothing is tracked, and there is no account, subscription or export limit.
 
 Private by design
-• Pages, colors and files are processed locally, inside Figma
+• Your designs never leave your computer. Pages, colors and files are processed locally, inside Figma
 • Nothing is sent anywhere. The only download is the open-source color engine Ghostscript (15.5 MB), loaded once per session from cdn.jsdelivr.net and checked against a fixed checksum before it runs
-• No account, no analytics, no export limits
-• Open source, so anyone can verify this
+• No account, no analytics, no tracking
+• Open source, so anyone can verify all of this
 
-Light and efficient
-• Nothing runs in the background. Checks and color scans start when you open their tab, the color engine only loads when you preview colors or export
-• No round trip to a server: conversion starts right away and works on slow connections
-• Gradients stay smooth vectors and images keep their resolution unless you reduce them
+Fast and light
+• No uploads and no server queue: conversion starts the moment you export
+• Nothing runs in the background. Checks and color scans start when you open their tab, and the color engine loads only when you preview colors or export
+• Gradients stay smooth vectors, and images keep their resolution unless you reduce them
+
+Free, for real
+• Every feature is free: CMYK, spot colors, preflight and fixes
+• No export limits, no watermark, no Pro plan
+• There is no server to pay for, so it stays free
 
 Create
 • Print pages in A6 to A1, DL, square, business card and US sizes, with bleed, safe area and crop marks
@@ -54,9 +59,9 @@ Export
 
 Languages: English, Deutsch, Español, Français. The plugin follows your system language, and you can switch it in its menu.
 
-Deutsch: Druckfertige PDFs direkt in Figma, mit Beschnitt, Prüfung und CMYK. Alles läuft auf deinem Gerät, nichts wird hochgeladen.
-Español: PDF listos para imprenta en Figma, con sangrado, revisión y CMYK. Todo se ejecuta en tu dispositivo y no se sube nada.
-Français : des PDF prêts à imprimer dans Figma, avec fond perdu, contrôle et CMJN. Tout s'exécute sur votre appareil, rien n'est envoyé.
+Deutsch: Kostenlose, druckfertige PDFs direkt in Figma, mit Beschnitt, Prüfung und CMYK. Alles läuft auf deinem Gerät, nichts wird hochgeladen.
+Español: PDF listos para imprenta, gratis y en Figma, con sangrado, revisión y CMYK. Todo se ejecuta en tu dispositivo y no se sube nada.
+Français : des PDF prêts à imprimer, gratuits et dans Figma, avec fond perdu, contrôle et CMJN. Tout s'exécute sur votre appareil, rien n'est envoyé.
 
 Source code (AGPL-3.0): https://github.com/marco-vrinssen/print-kit
 ```
@@ -64,7 +69,7 @@ Source code (AGPL-3.0): https://github.com/marco-vrinssen/print-kit
 ## Category and tags
 
 - Category: Import & export.
-- Tags: print, CMYK, PDF, bleed, crop marks, prepress, preflight, privacy.
+- Tags: print, CMYK, PDF, bleed, crop marks, prepress, preflight, privacy, free.
 
 ## Network access
 

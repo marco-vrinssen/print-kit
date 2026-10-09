@@ -109,7 +109,7 @@ Print Kit ships no Pantone, HKS or RAL color values. Those libraries are license
 | `check.mjs` | Tests the geometry, color codes and the whole PDF pipeline with the real Ghostscript build |
 | `test/harness.html` | Hosts the built UI like Figma does, with a fake main thread |
 | `docs/cover.html`, `docs/listing.md` | The Community cover (rendered to `cover.png`) and the publish dialog texts |
-| `docs/icon.svg` | The icon; `icon.png` is 1024 px, `icon-128.png` is the size Figma's publish dialog asks for |
+| `docs/icon.svg` | The icon; `icon.png` is 1024 px, `icon-figma-128.png` is the square upload for Figma's publish dialog |
 
 Commands:
 

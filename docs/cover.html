@@ -15,24 +15,28 @@
     justify-content: space-between;
     padding: 0 160px;
     font-family: Inter, system-ui, sans-serif;
-    color: #2e2e2e;
+    color: #2d2b28;
     background: #f4efe6;
     -webkit-font-smoothing: antialiased;
   }
+
+  /* Brand type: Inter at -4 %. Set on each text element, since an inherited em value would
+     stay at the body's size. */
+  h1, p, li { letter-spacing: -0.04em; }
 
   .copy { width: 860px; }
 
   .copy img { display: block; width: 144px; height: 144px; margin-bottom: 56px; filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.1)) drop-shadow(0 0 1px rgba(0, 0, 0, 0.15)); }
 
-  h1 { margin: 0 0 32px; font-size: 84px; line-height: 96px; font-weight: 600; letter-spacing: -0.02em; }
+  h1 { margin: 0 0 32px; font-size: 84px; line-height: 96px; font-weight: 600; }
 
   p { margin: 0; font-size: 36px; line-height: 50px; font-weight: 400; color: #6b6760; }
 
-  .points { display: flex; gap: 16px; margin: 48px 0 0; padding: 0; list-style: none; }
+  .points { display: flex; gap: 12px; margin: 48px 0 0; padding: 0; list-style: none; }
 
-  .points li { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 22px 0 16px; border: 1.5px solid rgba(46, 46, 46, 0.18); border-radius: 26px; white-space: nowrap; font-size: 24px; font-weight: 500; }
+  .points li { display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 22px 0 16px; border: 1.5px solid rgba(45, 43, 40, 0.18); border-radius: 26px; white-space: nowrap; font-size: 24px; font-weight: 500; }
 
-  .points li::before { content: ""; width: 22px; height: 22px; background: #2e2e2e; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+  .points li::before { content: ""; width: 22px; height: 22px; background: #2d2b28; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
 
   /* The plugin window at 1.4x, framed by crop marks like the icon. */
   .stage { position: relative; width: 504px; }
@@ -43,7 +47,7 @@
 
   iframe { display: block; width: 360px; height: 560px; border: 0; }
 
-  .mark { position: absolute; background: #2e2e2e; }
+  .mark { position: absolute; background: #2d2b28; }
 
   .h { width: 48px; height: 3px; }
 
@@ -52,12 +56,13 @@
 
 <section class="copy">
   <img src="icon.png" alt="">
-  <h1>Print-ready PDFs, made on your device</h1>
-  <p>Bleed, preflight and CMYK conversion run right inside Figma. No uploads, no account, no waiting for a server.</p>
+  <h1>Print-ready PDFs.<br>Private, fast and free.</h1>
+  <p>Bleed, preflight and CMYK run right on your device. No uploads, no account, no server, no cost.</p>
   <ul class="points">
     <li>On your device</li>
     <li>No uploads</li>
     <li>No tracking</li>
+    <li>Free</li>
   </ul>
 </section>
 
