@@ -1,6 +1,6 @@
 # Figma Community listing
 
-The text for Figma's publish dialog, field by field. The cover is `docs/cover.png`, rendered from `docs/cover.html`; the icon is `docs/icon-128.png`. Figma takes one name, tagline and description, so the listing is in English with a short summary in German, Spanish and French at the end.
+The text for Figma's publish dialog, field by field. The cover is `docs/cover.png`, rendered from `docs/cover.html`; the icon is `docs/icon-figma-128.png`, with a full square background because Figma rounds the corners itself. Figma takes one name, tagline and description, so the listing is in English with a short summary in German, Spanish and French at the end.
 
 ## Name
 
@@ -63,17 +63,19 @@ Deutsch: Kostenlose, druckfertige PDFs direkt in Figma, mit Beschnitt, Prüfung 
 Español: PDF listos para imprenta, gratis y en Figma, con sangrado, revisión y CMYK. Todo se ejecuta en tu dispositivo y no se sube nada.
 Français : des PDF prêts à imprimer, gratuits et dans Figma, avec fond perdu, contrôle et CMJN. Tout s'exécute sur votre appareil, rien n'est envoyé.
 
+Privacy policy: https://github.com/marco-vrinssen/print-kit/blob/main/PRIVACY.md
 Source code (AGPL-3.0): https://github.com/marco-vrinssen/print-kit
 ```
 
 ## Category and tags
 
 - Category: Import & export.
-- Tags: print, CMYK, PDF, bleed, crop marks, prepress, preflight, privacy, free.
+- Subcategory: PDFs.
+- Tags, five at most: print, CMYK, bleed, crop marks, preflight.
 
 ## Network access
 
-- Choose Restricted, with `https://cdn.jsdelivr.net`.
+- Restricted, to `https://cdn.jsdelivr.net/npm/@okathira/ghostpdl-wasm@1.1.0/`, as in `manifest.json`.
 - Reason, as in `manifest.json`:
 
 ```text
@@ -85,6 +87,8 @@ Downloads the Ghostscript color engine, which is checked against a pinned SHA-25
 - Data collected: none. Print Kit has no server, account or analytics.
 - Data stored: settings and a loaded ICC profile in Figma's client storage on the user's machine, and color choices in the Figma file.
 - Network: one download of a public, checksum-verified engine file. Nothing is sent.
+- Privacy policy: https://github.com/marco-vrinssen/print-kit/blob/main/PRIVACY.md
+- Security reports: GitHub private vulnerability reporting on the repository.
 
 ## Support contact
 

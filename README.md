@@ -2,7 +2,7 @@
 
 <img src="docs/icon.png" width="96" alt="Print Kit icon">
 
-Print Kit is a Figma plugin that prepares print-ready PDFs on your own computer. It builds print pages with bleed and crop marks, checks them for print problems, maps colors to pure black, fixed CMYK values or spot colors, and converts to CMYK with Ghostscript. Unlike Print for Figma and Printery, it never uploads your designs.
+Print Kit is a Figma plugin that prepares print-ready PDFs on your own computer. It builds print pages with bleed and crop marks, checks them for print problems, maps colors to pure black, fixed CMYK values or spot colors, and converts to CMYK with Ghostscript. It never uploads your designs.
 
 ## In short
 
@@ -44,7 +44,7 @@ What counts as a page:
 - A selected frame, or the frame around a selected layer.
 - The frames inside a selected section.
 - With nothing selected, every print page on the current Figma page.
-- Print pages from Print for Figma and Printery are recognized by their trim slice.
+- Print pages from other plugins are recognized by a slice named "Trimbox" that marks the trim.
 
 Nothing runs in the background. Check and Colors run when their tab opens, a changed selection only marks results as outdated, and the color engine loads only for the print preview or an export.
 
@@ -74,24 +74,10 @@ Print Kit ships no Pantone, HKS or RAL color values. Those libraries are license
 ## Privacy
 
 - Pages, colors and files stay on your computer.
-- The color engine (15.5 MB) downloads from `cdn.jsdelivr.net` once per plugin session, only for the print preview, CMYK, grayscale or reduced images. It runs only if its SHA-256 matches the pinned value.
+- The color engine (15.5 MB) downloads from `https://cdn.jsdelivr.net/npm/@okathira/ghostpdl-wasm@1.1.0/`, the only address the manifest allows, once per plugin session and only for the print preview, CMYK, grayscale or reduced images. It runs only if its SHA-256 matches the pinned value.
 - There is no analytics and no account.
 - Settings and a loaded ICC profile are stored on your computer. Color choices are stored in the Figma file, so everyone who exports it gets the same colors.
-
-## Compared with the other plugins
-
-| Feature | Print for Figma | Printery | Print Kit |
-|---|---|---|---|
-| Where colors convert | Publisher's server | Publisher's server | This computer |
-| Free exports | None | A few | Unlimited |
-| Pure black K 100 | Pro color maps | Per color | Pure, rich for areas, or by profile |
-| Spot colors and overprint | Pro | Yes | Yes, with Pantone, HKS and RAL name completion |
-| TrimBox and BleedBox | Cloud path only | Yes, bleed rounded | Yes, exact |
-| Output intent | PDF/X-4 on the server | Skipped by default | FOGRA39, FOGRA47 or your profile |
-| Preflight | Pro | Partly stubbed | Images, text, lines, fonts, edges, safe area, with fixes |
-| Languages | English | English | English, German, Spanish, French |
-| Templates, facing pages, AI upscaling | Partly | Yes | Not yet |
-| Analytics | Amplitude, PostHog | Microsoft Clarity | None |
+- The full policy is in [PRIVACY.md](PRIVACY.md). Report security issues through GitHub private vulnerability reporting.
 
 ## Development
 
@@ -133,4 +119,4 @@ With the server running, open `http://127.0.0.1:8765/test/harness.html`. Add `?d
 
 ## License
 
-AGPL-3.0-or-later, because Print Kit runs Ghostscript, which is licensed under the AGPL. pdf-lib and fflate are MIT licensed. Inter is under the SIL Open Font License 1.1. The FOGRA39 and FOGRA47 profiles are colord's CC0 profiles.
+AGPL-3.0-or-later, because Print Kit runs Ghostscript, which is licensed under the AGPL. pdf-lib and fflate are MIT licensed, and their notices ship at the top of the script in `dist/ui.html`. Inter is under the SIL Open Font License 1.1. The FOGRA39 and FOGRA47 profiles are colord's CC0 profiles.
