@@ -197,7 +197,7 @@ listen("selection", (message) => {
 });
 
 listen("error", (message) => {
-  if (message.during === "selection" || message.during === "thumbs") send({ type: "notify", text: message.text, error: true });
+  if (message.during === "selection" || message.during === "thumbs") send({ type: "notify", text: t("error.figma"), error: true });
 });
 
 window.addEventListener("message", (event) => {

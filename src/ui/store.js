@@ -79,7 +79,7 @@ export function receive(message) {
   if (message.type === "error") {
     const pending = waiting.get(REPLIES[message.during]);
     waiting.delete(REPLIES[message.during]);
-    if (pending) return pending.reject(new Error(message.text));
+    if (pending) return pending.reject(new Error("figma"));
   }
   const pending = waiting.get(message.type);
   if (pending) {

@@ -2,7 +2,7 @@
 // check, render, convert, save.
 import { fromPt } from "../shared/print.js";
 import { state, update, request, send, listen, saveSettings, goTo } from "./store.js";
-import { t, num } from "./i18n.js";
+import { t, num, errorText } from "./i18n.js";
 import { h, icon, section, labelled, segmented, checkbox, menuButton, textField, $ } from "./dom.js";
 import { fetchCheck } from "./tab-check.js";
 import { buildPdf } from "./pipeline.js";
@@ -167,7 +167,7 @@ async function runExport(confirmed) {
     update((s) => (s.result = { file, size: pdf.bytes.length, pages: pages.length, color, profile: profile && profileName(options().profile), gradients: pdf.gradients }));
     send({ type: "notify", text: t("export.saved", { file }) });
   } catch (error) {
-    send({ type: "notify", text: error.message, error: true });
+    send({ type: "notify", text: errorText(error), error: true });
   } finally {
     update((s) => {
       s.busy = null;

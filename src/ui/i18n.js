@@ -214,6 +214,13 @@ const EN = {
   "export.saved": "Saved {file}",
   "profile.notCmyk": "That is a {space} profile. Load a CMYK profile.",
   "profile.notIcc": "That file isn't an ICC profile.",
+  "error.offline": "No internet connection. The color engine downloads once per session (15.5 MB) for the print preview and for CMYK, grayscale or reduced images. Connect and try again.",
+  "error.download": "The color engine couldn't be downloaded. Try again in a moment.",
+  "error.checksum": "The color engine download didn't match its checksum, so it didn't run. Try again.",
+  "error.engine": "The color engine couldn't start, possibly for lack of memory. Close and reopen Print Kit, then try again.",
+  "error.convert": "The color conversion failed. Try again, and report it on GitHub if it keeps happening.",
+  "error.figma": "Figma couldn't finish this step. Try again, or close and reopen Print Kit.",
+  "error.unknown": "Something went wrong. Try again, and report it on GitHub if it keeps happening.",
   "color.cmyk": "CMYK",
   "color.gray": "Grayscale",
   "color.rgb": "RGB",
@@ -483,6 +490,13 @@ const DE = {
   "export.saved": "{file} gespeichert",
   "profile.notCmyk": "Das ist ein {space}-Profil. Bitte ein CMYK-Profil laden.",
   "profile.notIcc": "Diese Datei ist kein ICC-Profil.",
+  "error.offline": "Keine Internetverbindung. Die Farb-Engine wird einmal pro Sitzung geladen (15,5 MB), für die Druckvorschau und für CMYK, Graustufen oder verringerte Bilder. Verbindung herstellen und erneut versuchen.",
+  "error.download": "Die Farb-Engine konnte nicht geladen werden. Bitte gleich noch einmal versuchen.",
+  "error.checksum": "Der Download der Farb-Engine passte nicht zur Prüfsumme und wurde nicht ausgeführt. Bitte erneut versuchen.",
+  "error.engine": "Die Farb-Engine konnte nicht starten, vermutlich wegen zu wenig Speicher. Print Kit schließen, neu öffnen und erneut versuchen.",
+  "error.convert": "Die Farbumrechnung ist fehlgeschlagen. Bitte erneut versuchen und auf GitHub melden, falls es wieder passiert.",
+  "error.figma": "Figma konnte diesen Schritt nicht abschließen. Bitte erneut versuchen oder Print Kit schließen und neu öffnen.",
+  "error.unknown": "Etwas ist schiefgelaufen. Bitte erneut versuchen und auf GitHub melden, falls es wieder passiert.",
   "color.cmyk": "CMYK",
   "color.gray": "Graustufen",
   "color.rgb": "RGB",
@@ -752,6 +766,13 @@ const ES = {
   "export.saved": "{file} guardado",
   "profile.notCmyk": "Es un perfil {space}. Carga un perfil CMYK.",
   "profile.notIcc": "Ese archivo no es un perfil ICC.",
+  "error.offline": "Sin conexión a internet. El motor de color se descarga una vez por sesión (15,5 MB) para la vista previa y para CMYK, escala de grises o imágenes reducidas. Conéctate e inténtalo de nuevo.",
+  "error.download": "No se pudo descargar el motor de color. Inténtalo de nuevo en un momento.",
+  "error.checksum": "La descarga del motor de color no coincidía con su suma de verificación y no se ejecutó. Inténtalo de nuevo.",
+  "error.engine": "El motor de color no pudo iniciarse, quizá por falta de memoria. Cierra y vuelve a abrir Print Kit, e inténtalo de nuevo.",
+  "error.convert": "La conversión de color falló. Inténtalo de nuevo y avísanos en GitHub si vuelve a pasar.",
+  "error.figma": "Figma no pudo completar este paso. Inténtalo de nuevo o cierra y vuelve a abrir Print Kit.",
+  "error.unknown": "Algo salió mal. Inténtalo de nuevo y avísanos en GitHub si vuelve a pasar.",
   "color.cmyk": "CMYK",
   "color.gray": "Escala de grises",
   "color.rgb": "RGB",
@@ -1021,6 +1042,13 @@ const FR = {
   "export.saved": "{file} enregistré",
   "profile.notCmyk": "C'est un profil {space}. Chargez un profil CMJN.",
   "profile.notIcc": "Ce fichier n'est pas un profil ICC.",
+  "error.offline": "Pas de connexion internet. Le moteur couleur se télécharge une fois par session (15,5 Mo) pour l'aperçu et pour le CMJN, les niveaux de gris ou les images réduites. Connectez-vous et réessayez.",
+  "error.download": "Le moteur couleur n'a pas pu être téléchargé. Réessayez dans un instant.",
+  "error.checksum": "Le téléchargement du moteur couleur ne correspondait pas à sa somme de contrôle et n'a pas été exécuté. Réessayez.",
+  "error.engine": "Le moteur couleur n'a pas pu démarrer, sans doute faute de mémoire. Fermez et rouvrez Print Kit, puis réessayez.",
+  "error.convert": "La conversion des couleurs a échoué. Réessayez et signalez-le sur GitHub si cela se reproduit.",
+  "error.figma": "Figma n'a pas pu terminer cette étape. Réessayez, ou fermez et rouvrez Print Kit.",
+  "error.unknown": "Une erreur est survenue. Réessayez et signalez-le sur GitHub si cela se reproduit.",
   "color.cmyk": "CMJN",
   "color.gray": "Niveaux de gris",
   "color.rgb": "RVB",
@@ -1107,6 +1135,15 @@ export function num(value, digits = 2, grouping = true) {
 // "left, top and right" in the current language.
 export function list(items) {
   return new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(items);
+}
+
+// Thrown errors carry a code worded as error.<code>. Anything else is a bug: it goes to the console,
+// and the user gets the general text instead of a developer message.
+export function errorText(error) {
+  const key = `error.${error && error.message}`;
+  if (key in EN) return t(key);
+  console.error(error);
+  return t("error.unknown");
 }
 
 export function t(key, vars) {

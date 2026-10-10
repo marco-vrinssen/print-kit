@@ -4,6 +4,7 @@
 // rewrite works on content stream operators. Gradients have their own module, and
 // images are left to Ghostscript.
 import { PDFName, PDFDict, PDFArray, PDFNumber, PDFRawStream, PDFRef, decodePDFRawStream } from "pdf-lib";
+import { hexOf } from "../shared/print.js";
 
 const WHITESPACE = new Set([0, 9, 10, 12, 13, 32]);
 const DELIMITERS = new Set([40, 41, 60, 62, 91, 93, 123, 125, 47, 37]);
@@ -14,8 +15,8 @@ const FILL_COLOR = new Set(["cs", "sc", "scn", "rg", "g", "k"]);
 
 // Black shapes at least this wide and tall print in rich black when that choice is on:
 // 25 mm. Text and lines stay pure K, since Figma writes each glyph as its own small shape.
-export const RICH_MIN_PT = (25 * 72) / 25.4;
-export const RICH_BLACK = [0.6, 0.4, 0.4, 1];
+const RICH_MIN_PT = (25 * 72) / 25.4;
+const RICH_BLACK = [0.6, 0.4, 0.4, 1];
 
 export function bytesToLatin1(bytes) {
   let out = "";
@@ -25,7 +26,7 @@ export function bytesToLatin1(bytes) {
   return out;
 }
 
-export function latin1ToBytes(text) {
+function latin1ToBytes(text) {
   const out = new Uint8Array(text.length);
   for (let i = 0; i < text.length; i++) out[i] = text.charCodeAt(i) & 0xff;
   return out;
@@ -115,11 +116,6 @@ export function parseOperations(text) {
   return ops;
 }
 
-export function hexOf(r, g, b) {
-  const to = (v) => Math.max(0, Math.min(255, Math.round(v * 255))).toString(16).padStart(2, "0");
-  return (to(r) + to(g) + to(b)).toUpperCase();
-}
-
 const fmt = (v) => String(Math.round(v * 10000) / 10000);
 
 // Resolves a color space name to "rgb", "gray", "cmyk" or "other".
@@ -160,7 +156,7 @@ function multiply(m, n) {
 // Tells whether the fill color set at ops[from] paints a large shape: one subpath at least
 // RICH_MIN_PT wide and tall on the page. It looks ahead until the next fill color or the end
 // of the enclosing q … Q.
-export function paintsLargeArea(ops, from, ctm) {
+function paintsLargeArea(ops, from, ctm) {
   const stack = [];
   let m = ctm;
   let box = null;
@@ -360,7 +356,6 @@ export function buildPlan(mappings, options) {
 export function rewriteDocumentColors(pdfDoc, plan) {
   const context = pdfDoc.context;
   const done = new Set();
-  let streams = 0;
 
   const spotSpaces = new Map();
   const spotSpace = (spot) => {
@@ -399,7 +394,6 @@ export function rewriteDocumentColors(pdfDoc, plan) {
         if (k !== "Filter" && k !== "Length" && k !== "DecodeParms") replacement.dict.set(key, value);
       }
       if (id) context.assign(streamRef, replacement);
-      streams++;
       if (resources) {
         if (result.usedSpots.size) {
           const spaces = ensureDict(resources, "ColorSpace");
@@ -439,5 +433,4 @@ export function rewriteDocumentColors(pdfDoc, plan) {
       processStream(contents, resources);
     }
   }
-  return { streamsChanged: streams };
 }

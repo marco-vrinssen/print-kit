@@ -4,7 +4,8 @@
 // it samples linear and radial gradients, reads mesh gradients vertex by vertex, converts every
 // sampled color exactly with the export profile, and writes the gradient back as a vector.
 import { PDFName, PDFDict, PDFArray, PDFNumber, PDFRawStream, PDFRef, decodePDFRawStream } from "pdf-lib";
-import { bytesToLatin1, hexOf } from "./pdf-colors.js";
+import { hexOf } from "../shared/print.js";
+import { bytesToLatin1 } from "./pdf-colors.js";
 
 const SAMPLES = 32;
 
@@ -277,11 +278,16 @@ export function applyGradients(doc, gradients, converted, target, plan) {
     }
     return converted.get(hex);
   };
+  // A gradient without a converted value for every color stays RGB, and Ghostscript rasterizes it.
   let done = 0;
+  let skipped = 0;
   for (const g of gradients) {
     if (g.kind === "function") {
       const values = g.samples.map((s) => valueOf(s.color));
-      if (values.some((v) => !v)) continue;
+      if (values.some((v) => !v)) {
+        skipped++;
+        continue;
+      }
       const pieces = [];
       for (let i = 0; i < values.length - 1; i++) pieces.push(context.obj({ FunctionType: 2, Domain: [0, 1], C0: values[i], C1: values[i + 1], N: 1 }));
       const fn =
@@ -295,7 +301,10 @@ export function applyGradients(doc, gradients, converted, target, plan) {
     } else if (g.kind === "mesh" && g.ref) {
       const { vertices, headBytes, coords } = g.mesh;
       const values = vertices.map((v) => valueOf(v.color));
-      if (values.some((v) => !v)) continue;
+      if (values.some((v) => !v)) {
+        skipped++;
+        continue;
+      }
       const comps = values[0].length;
       const data = new Uint8Array(vertices.length * (headBytes + comps));
       vertices.forEach((v, i) => {
@@ -311,7 +320,9 @@ export function applyGradients(doc, gradients, converted, target, plan) {
       Object.assign(dict, { ColorSpace: space, BitsPerComponent: 8, Decode: [...coords, ...values[0].flatMap(() => [0, 1])] });
       context.assign(g.ref, context.flateStream(data, dict));
       done++;
+    } else {
+      skipped++;
     }
   }
-  return { converted: done, skipped: gradients.filter((g) => g.kind === "skipped").length };
+  return { converted: done, skipped };
 }

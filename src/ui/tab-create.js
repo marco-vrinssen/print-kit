@@ -2,7 +2,7 @@
 // safe area and crop marks. Selected print pages are updated in place.
 import { PRESETS, roundFor, parseLength, convertSnapped, toPt, fromPt } from "../shared/print.js";
 import { state, update, request, send, saveSettings, goTo } from "./store.js";
-import { t, num, has } from "./i18n.js";
+import { t, num, has, errorText } from "./i18n.js";
 import { h, section, labelled, numberField, segmented, checkbox, openMenu } from "./dom.js";
 import { pageDiagram } from "./diagram.js";
 
@@ -21,7 +21,7 @@ function change(values) {
   saveSettings();
 }
 
-export function presetLabel(preset) {
+function presetLabel(preset) {
   return has(`format.${preset.id}`) ? t(`format.${preset.id}`) : preset.label;
 }
 
@@ -30,7 +30,7 @@ function matchPreset(s) {
   return PRESETS.find((p) => p.unit === s.unit && ((p.width === s.width && p.height === s.height) || (p.width === s.height && p.height === s.width))) || null;
 }
 
-export function formatName(s) {
+function formatName(s) {
   const preset = matchPreset(s);
   if (!preset) return `${num(s.width)} × ${num(s.height)} ${s.unit}`;
   const rotated = preset.width !== preset.height && preset.width !== s.width;
@@ -215,7 +215,7 @@ async function run(type) {
     update((s) => (s.done = reply));
     send({ type: "notify", text: doneText(reply) || t("create.noFrames") });
   } catch (error) {
-    send({ type: "notify", text: error.message, error: true });
+    send({ type: "notify", text: errorText(error), error: true });
   } finally {
     update((s) => (s.busy = null));
   }

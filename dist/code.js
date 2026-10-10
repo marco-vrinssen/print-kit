@@ -80,9 +80,9 @@
     else scale = Math.max(w / iw, h / ih);
     return Math.round(72 / scale);
   }
-  function hexOfColor(color) {
+  function hexOf(r, g, b) {
     const to = (v) => Math.max(0, Math.min(255, Math.round(v * 255))).toString(16).padStart(2, "0");
-    return (to(color.r) + to(color.g) + to(color.b)).toUpperCase();
+    return (to(r) + to(g) + to(b)).toUpperCase();
   }
 
   // src/main/pages.js
@@ -370,6 +370,7 @@
       else if (page.bleed === 0) add(node, "page-no-bleed", "info");
       const t = page.trim;
       const pending = [];
+      const pageFills = JSON.stringify(visiblePaints(node.fills));
       walk(node, (child, clipped) => {
         const box = relativeBox(child, node);
         if (child.type === "TEXT") {
@@ -398,7 +399,8 @@
           );
         }
         if (Array.isArray(child.effects) && child.effects.some((e) => e.visible !== false)) add(child, "effects", "info");
-        if (!clipped && box && page.bleed > 0 && child.type !== "TEXT" && (visiblePaints(child.fills).length || child.type === "FRAME")) {
+        const fills = visiblePaints(child.fills);
+        if (!clipped && box && page.bleed > 0 && child.type !== "TEXT" && (fills.length || child.type === "FRAME") && JSON.stringify(fills) !== pageFills) {
           const sides = trimSides(box, t);
           if (sides.length) add(child, "edge-trim", "warning", { sides }, canExtend(child) ? "bleed" : null);
         }
@@ -448,10 +450,10 @@
     };
     const count = (paint, kind) => {
       if (paint.type === "SOLID") {
-        addColor(hexOfColor(paint.color), kind);
+        addColor(hexOf(paint.color.r, paint.color.g, paint.color.b), kind);
       } else if (paint.type.indexOf("GRADIENT") === 0) {
         const stops = (paint.gradientStops || []).map((s) => ({
-          hex: hexOfColor(s.color),
+          hex: hexOf(s.color.r, s.color.g, s.color.b),
           position: Math.round(s.position * 1e3) / 1e3,
           alpha: Math.round((s.color.a === void 0 ? 1 : s.color.a) * 100) / 100
         }));
@@ -528,11 +530,15 @@
       fileName: figma.root.name
     });
   }
+  function postError(error, during) {
+    console.error(error);
+    post({ type: "error", during });
+  }
   function postSelection() {
     try {
       post({ type: "selection", selection: selectionSummary() });
     } catch (error) {
-      post({ type: "error", text: error && error.message ? error.message : String(error), during: "selection" });
+      postError(error, "selection");
     }
   }
   async function handle(message) {
@@ -563,10 +569,18 @@
         return exportPages(message.ids, post);
       case "select": {
         const node = await figma.getNodeByIdAsync(message.id);
-        if (node && node.type !== "DOCUMENT" && node.type !== "PAGE") {
-          figma.currentPage.selection = [node];
-          figma.viewport.scrollAndZoomIntoView([node]);
-        }
+        let page = node;
+        while (page && page.type !== "PAGE") page = page.parent;
+        if (!page || page === node) return;
+        if (page !== figma.currentPage) await figma.setCurrentPageAsync(
+          /** @type {PageNode} */
+          page
+        );
+        figma.currentPage.selection = [
+          /** @type {SceneNode} */
+          node
+        ];
+        figma.viewport.scrollAndZoomIntoView([node]);
         return;
       }
       case "notify":
@@ -584,7 +598,7 @@
       try {
         await handle(message);
       } catch (error) {
-        post({ type: "error", text: error && error.message ? error.message : String(error), during: message.type });
+        postError(error, message.type);
       }
     };
     figma.on("selectionchange", postSelection);

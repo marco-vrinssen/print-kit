@@ -14,6 +14,9 @@ await build({
   logLevel: "warning",
 });
 
+// pdf-lib and fflate are MIT licensed, which asks for their notices in every copy.
+const notices = ["pdf-lib/LICENSE.md", "fflate/LICENSE"].map((file) => readFileSync(`node_modules/${file}`, "utf8").trim()).join("\n\n");
+
 // The Ghostscript loader only imports Node's "module" on Node, so it stays external here.
 const ui = await build({
   entryPoints: ["src/ui/app.js"],
@@ -25,6 +28,7 @@ const ui = await build({
   write: false,
   external: ["module"],
   define: { "import.meta.url": "undefined" },
+  banner: { js: `/*! pdf-lib and fflate\n\n${notices}\n*/` },
   // The two built-in print profiles ship inside the UI, 120 KB each.
   loader: { ".icc": "binary" },
   logLevel: "warning",

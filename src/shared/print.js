@@ -1,7 +1,7 @@
 // Print geometry shared by the main thread, the UI and the checks.
 // One Figma pixel is one PDF point, so all page math happens in points.
 
-export const PT_PER_UNIT = { mm: 72 / 25.4, cm: 720 / 25.4, in: 72, pt: 1, px: 1 };
+const PT_PER_UNIT = { mm: 72 / 25.4, cm: 720 / 25.4, in: 72, pt: 1, px: 1 };
 
 // Crop marks use this near-black so the export can tell them apart from black artwork
 // and print them in registration color on every plate.
@@ -103,7 +103,7 @@ export function pageGeometry(settings) {
 }
 
 // Eight thin rectangles centered on the trim lines, outside the bleed.
-export function cropMarks(trim, gap, length, weight) {
+function cropMarks(trim, gap, length, weight) {
   const half = weight / 2;
   const left = trim.x;
   const right = trim.x + trim.w;
@@ -159,7 +159,7 @@ export function effectivePpi(paint, w, h, imageW, imageH) {
   return Math.round(72 / scale);
 }
 
-export function hexOfColor(color) {
+export function hexOf(r, g, b) {
   const to = (v) => Math.max(0, Math.min(255, Math.round(v * 255))).toString(16).padStart(2, "0");
-  return (to(color.r) + to(color.g) + to(color.b)).toUpperCase();
+  return (to(r) + to(g) + to(b)).toUpperCase();
 }

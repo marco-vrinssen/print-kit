@@ -6,7 +6,7 @@ import { PDFDocument, PDFName, PDFArray, PDFBool, PDFDict, PDFRawStream, decodeP
 import createGhostscript from "@okathira/ghostpdl-wasm";
 import { pageGeometry, pdfBoxes, effectivePpi, toPt, parseLength, convertSnapped } from "./src/shared/print.js";
 import { parseOperations, buildPlan, rewriteDocumentColors, rewriteContent, bytesToLatin1 } from "./src/ui/pdf-colors.js";
-import { conversionArgs, PROFILE_PATH } from "./src/ui/engine.js";
+import { conversionArgs, PROFILE_PATH, runGhostscript } from "./src/ui/engine.js";
 import { applyBoxes, addOutputIntent, splitPages, zipFiles, swatchDocument, readSwatches, hexToRgb } from "./src/ui/pdf-output.js";
 import { collectGradients, gradientColors, applyGradients } from "./src/ui/pdf-gradients.js";
 import { buildPdf, proofColors } from "./src/ui/pipeline.js";
@@ -191,6 +191,28 @@ await check("swatch preview reads converted CMYK values in order", async () => {
   assert.equal(values.length, 3);
   close(values[0][3], 0.882, 0.02);
   assert.ok(values[2][1] > 0.8 && values[2][2] > 0.8, "red needs magenta and yellow");
+});
+
+// The plugin's own loader, with the jsDelivr download replaced by the local copy of the same file.
+await check("the engine runs only with its checksum, and offline or a failed start reject with a code", async () => {
+  const wasm = readFileSync("node_modules/@okathira/ghostpdl-wasm/dist/gs.wasm");
+  const files = { "/in.pdf": await swatchDocument([[1, 0, 0]]) };
+  const args = conversionArgs({ color: "cmyk" });
+  const { fetch } = globalThis;
+  const { instantiate } = WebAssembly;
+  try {
+    globalThis.fetch = () => Promise.reject(new TypeError("Failed to fetch"));
+    await assert.rejects(runGhostscript(args, files), { message: "offline" });
+    globalThis.fetch = async () => new Response(wasm.subarray(1));
+    await assert.rejects(runGhostscript(args, files), { message: "checksum" });
+    globalThis.fetch = async () => new Response(wasm);
+    assert.equal((await readSwatches(await runGhostscript(args, files), "cmyk")).length, 1);
+    WebAssembly.instantiate = () => Promise.reject(new RangeError("Out of memory"));
+    await assert.rejects(runGhostscript(args, files), { message: "engine" });
+  } finally {
+    globalThis.fetch = fetch;
+    WebAssembly.instantiate = instantiate;
+  }
 });
 
 // The export path for gradients: convert the sampled colors, rebuild the gradients, then convert the page.

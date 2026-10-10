@@ -12,7 +12,7 @@ import { deltaE } from "./color-codes.js";
 // spotName, overprint }, turned into what the color rewriter takes. A spot color without its
 // own values falls back to the converted color, and one without a name yet stays automatic.
 // Crop marks print on every plate.
-export function planMappings(mappings, converted) {
+function planMappings(mappings, converted) {
   const list = mappings.filter((m) => (m.mode === "spot" ? m.spotName : m.cmyk)).map((m) => ({
     hex: m.hex,
     cmyk: m.cmyk ? m.cmyk.map((v) => v / 100) : converted.get(m.hex) || [0, 0, 0, 1],

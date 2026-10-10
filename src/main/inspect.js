@@ -1,6 +1,6 @@
 // Preflight checks, their one-click fixes, and the color scan over print pages.
 // Issues carry a code and numbers; the UI words them in the user's language.
-import { effectivePpi, hexOfColor, fromPt, roundFor, REGISTRATION_HEX } from "../shared/print.js";
+import { effectivePpi, hexOf, fromPt, roundFor, REGISTRATION_HEX } from "../shared/print.js";
 import { readPage, targetPages, isDecoration } from "./pages.js";
 
 const MIN_TEXT_PT = 6;
@@ -76,6 +76,7 @@ export async function checkPages() {
 
     const t = page.trim;
     const pending = [];
+    const pageFills = JSON.stringify(visiblePaints(node.fills));
     walk(node, (child, clipped) => {
       const box = relativeBox(child, node);
 
@@ -109,8 +110,10 @@ export async function checkPages() {
 
       if (Array.isArray(child.effects) && child.effects.some((e) => e.visible !== false)) add(child, "effects", "info");
 
-      // Artwork that ends exactly at the trim leaves a white edge if the cut is off.
-      if (!clipped && box && page.bleed > 0 && child.type !== "TEXT" && (visiblePaints(child.fills).length || child.type === "FRAME")) {
+      // Artwork that ends exactly at the trim leaves a white edge if the cut is off, unless the
+      // page paints the same background into the bleed, as it does around a print copy of a frame.
+      const fills = visiblePaints(child.fills);
+      if (!clipped && box && page.bleed > 0 && child.type !== "TEXT" && (fills.length || child.type === "FRAME") && JSON.stringify(fills) !== pageFills) {
         const sides = trimSides(box, t);
         if (sides.length) add(child, "edge-trim", "warning", { sides }, canExtend(child) ? "bleed" : null);
       }
@@ -165,10 +168,10 @@ export function scanColors() {
   };
   const count = (paint, kind) => {
     if (paint.type === "SOLID") {
-      addColor(hexOfColor(paint.color), kind);
+      addColor(hexOf(paint.color.r, paint.color.g, paint.color.b), kind);
     } else if (paint.type.indexOf("GRADIENT") === 0) {
       const stops = (paint.gradientStops || []).map((s) => ({
-        hex: hexOfColor(s.color),
+        hex: hexOf(s.color.r, s.color.g, s.color.b),
         position: Math.round(s.position * 1000) / 1000,
         alpha: Math.round((s.color.a === undefined ? 1 : s.color.a) * 100) / 100,
       }));

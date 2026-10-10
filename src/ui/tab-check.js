@@ -1,6 +1,6 @@
 // Check tab: preflight results by page and topic, with explanations and one-click fixes.
 import { state, update, request, send, isStale } from "./store.js";
-import { t, list } from "./i18n.js";
+import { t, list, errorText } from "./i18n.js";
 import { h, icon, section } from "./dom.js";
 
 const TOPIC = {
@@ -37,7 +37,7 @@ export async function runCheck() {
   try {
     return await fetchCheck();
   } catch (error) {
-    send({ type: "notify", text: error.message, error: true });
+    send({ type: "notify", text: errorText(error), error: true });
     return null;
   } finally {
     update((s) => (s.busy = null));
@@ -48,7 +48,7 @@ async function fix(issue) {
   try {
     await request({ type: "fix", kind: issue.fix, nodeId: issue.nodeId, pageId: issue.pageId });
   } catch (error) {
-    send({ type: "notify", text: error.message, error: true });
+    send({ type: "notify", text: errorText(error), error: true });
   }
   await runCheck();
 }

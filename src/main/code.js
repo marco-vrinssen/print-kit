@@ -38,12 +38,18 @@ async function init() {
   });
 }
 
+// Errors stay in the console; the UI words them by the step they happened in.
+function postError(error, during) {
+  console.error(error);
+  post({ type: "error", during });
+}
+
 // Selection updates run outside the message handler, so they catch their own errors.
 function postSelection() {
   try {
     post({ type: "selection", selection: selectionSummary() });
   } catch (error) {
-    post({ type: "error", text: error && error.message ? error.message : String(error), during: "selection" });
+    postError(error, "selection");
   }
 }
 
@@ -75,10 +81,14 @@ async function handle(message) {
       return exportPages(message.ids, post);
     case "select": {
       const node = await figma.getNodeByIdAsync(message.id);
-      if (node && node.type !== "DOCUMENT" && node.type !== "PAGE") {
-        figma.currentPage.selection = [node];
-        figma.viewport.scrollAndZoomIntoView([node]);
-      }
+      let page = node;
+      while (page && page.type !== "PAGE") page = page.parent;
+      if (!page || page === node) return;
+
+      // A check result can point to another Figma page once the user has switched pages.
+      if (page !== figma.currentPage) await figma.setCurrentPageAsync(/** @type {PageNode} */ (page));
+      figma.currentPage.selection = [/** @type {SceneNode} */ (node)];
+      figma.viewport.scrollAndZoomIntoView([node]);
       return;
     }
     case "notify":
@@ -97,7 +107,7 @@ async function start() {
     try {
       await handle(message);
     } catch (error) {
-      post({ type: "error", text: error && error.message ? error.message : String(error), during: message.type });
+      postError(error, message.type);
     }
   };
   figma.on("selectionchange", postSelection);

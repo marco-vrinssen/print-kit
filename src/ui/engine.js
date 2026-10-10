@@ -2,7 +2,7 @@
 // The 15.5 MB engine is fetched once per session and must match its pinned SHA-256.
 import createGhostscript from "@okathira/ghostpdl-wasm";
 
-export const ENGINE = {
+const ENGINE = {
   name: "Ghostscript 10.06",
   url: "https://cdn.jsdelivr.net/npm/@okathira/ghostpdl-wasm@1.1.0/dist/gs.wasm",
   sha256: "e8aaf3af75da65fe0af8d49b30fa717e4ff13eedbbdc0cdd5700f54fb8f667e6",
@@ -47,25 +47,26 @@ export function engineLoaded() {
   return compiled !== null;
 }
 
-export function loadEngine(onProgress) {
+function loadEngine(onProgress) {
   if (!compiled) {
     compiled = (async () => {
-      const response = await fetch(ENGINE.url);
-      if (!response.ok) throw new Error(`Couldn't download the color engine (HTTP ${response.status}).`);
+      // Errors carry a code that i18n.js words as error.<code>. fetch only rejects without a connection.
+      const response = await fetch(ENGINE.url).catch(() => {
+        throw new Error("offline");
+      });
+      if (!response.ok) throw new Error("download");
       const reader = response.body.getReader();
       const bytes = new Uint8Array(ENGINE.size);
       let received = 0;
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
-        if (received + value.length > bytes.length) throw new Error("The color engine download is larger than expected and was rejected.");
+        if (received + value.length > bytes.length) throw new Error("checksum");
         bytes.set(value, received);
         received += value.length;
         if (onProgress) onProgress(received / ENGINE.size);
       }
-      if (received !== ENGINE.size || (await sha256Hex(bytes)) !== ENGINE.sha256) {
-        throw new Error("The color engine download didn't match its checksum and was rejected.");
-      }
+      if (received !== ENGINE.size || (await sha256Hex(bytes)) !== ENGINE.sha256) throw new Error("checksum");
       return WebAssembly.compile(bytes);
     })();
     compiled.catch(() => {
@@ -79,19 +80,26 @@ export function loadEngine(onProgress) {
 export async function runGhostscript(args, files, onProgress) {
   const wasm = await loadEngine(onProgress);
   const log = [];
-  const gs = await createGhostscript({
-    instantiateWasm(imports, done) {
-      WebAssembly.instantiate(wasm, imports).then((instance) => done(instance, wasm));
-      return {};
-    },
-    print: (line) => log.push(line),
-    printErr: (line) => log.push(line),
-  });
+
+  // Emscripten never settles when instantiation fails, for example without memory, so a race rejects.
+  let fail;
+  const failed = new Promise((resolve, reject) => (fail = () => reject(new Error("engine"))));
+  const gs = await Promise.race([
+    createGhostscript({
+      instantiateWasm(imports, done) {
+        WebAssembly.instantiate(wasm, imports).then((instance) => done(instance, wasm), fail);
+        return {};
+      },
+      print: (line) => log.push(line),
+      printErr: (line) => log.push(line),
+    }),
+    failed,
+  ]);
   for (const path of Object.keys(files)) gs.FS.writeFile(path, files[path]);
   const code = gs.callMain(["-q", "-dNOPAUSE", "-dBATCH", "-dSAFER", ...args]);
   if (code !== 0) {
-    const detail = log.filter((line) => /error/i.test(line)).slice(-2).join(" ");
-    throw new Error(`Color conversion failed${detail ? ": " + detail : "."}`);
+    console.error(log.join("\n"));
+    throw new Error("convert");
   }
   return gs.FS.readFile("/out.pdf");
 }

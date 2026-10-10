@@ -2,7 +2,7 @@
 // CMYK values or becomes a spot color. The print preview needs the color engine, so it runs
 // only when asked.
 import { state, update, request, send, saveColors, isStale } from "./store.js";
-import { t, num, list } from "./i18n.js";
+import { t, num, list, errorText } from "./i18n.js";
 import { h, icon, section, labelled, numberField, segmented, checkbox, menuButton, combobox, help } from "./dom.js";
 import { parseCmyk, spotSuggestions, normalizeSpot, roughCmyk } from "./color-codes.js";
 import { hexToRgb } from "./pdf-output.js";
@@ -23,7 +23,7 @@ export async function runScan() {
       s.proof = new Map();
     });
   } catch (error) {
-    send({ type: "notify", text: error.message, error: true });
+    send({ type: "notify", text: errorText(error), error: true });
   } finally {
     update((s) => (s.busy = null));
   }
@@ -195,7 +195,7 @@ async function preview() {
     const proof = await proofColors(hexes, { profile, mappings: state.colors.mappings, black: state.colors.black }, gs);
     update((s) => (s.proof = proof));
   } catch (error) {
-    send({ type: "notify", text: error.message, error: true });
+    send({ type: "notify", text: errorText(error), error: true });
   } finally {
     update((s) => {
       s.busy = null;
