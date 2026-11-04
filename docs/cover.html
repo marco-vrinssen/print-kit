@@ -1,6 +1,7 @@
 <!doctype html>
-<!-- Renders the Figma Community cover from the real dist/ui.html. Serve the plugin folder with
-     `python3 -m http.server 8765 --bind 127.0.0.1`, open /docs/cover.html and capture 1920 × 1080. -->
+<!-- Renders the Figma Community cover and carousel slides from the real dist/ui.html. Serve the plugin
+     folder with `python3 -m http.server 8765 --bind 127.0.0.1`, open /docs/cover.html, add
+     ?scene=create, colors or export for a slide, and capture 1920 × 1080. -->
 <meta charset="utf-8">
 <title>Print Kit cover</title>
 <link rel="stylesheet" href="../src/ui/inter.css">
@@ -56,9 +57,9 @@
 
 <section class="copy">
   <img src="icon.png" alt="">
-  <h1>Print-ready PDFs.<br>Private, fast and free.</h1>
-  <p>Bleed, preflight and CMYK run right on your device. No uploads, no account, no server, no cost.</p>
-  <ul class="points">
+  <h1 id="title">Print-ready PDFs.<br>Private, fast and free.</h1>
+  <p id="text">Bleed, preflight and CMYK run right on your device. No uploads, no account, no server, no cost.</p>
+  <ul class="points" id="points">
     <li>On your device</li>
     <li>No uploads</li>
     <li>No tracking</li>
@@ -92,7 +93,49 @@
   const frame = document.getElementById("plugin");
   frame.srcdoc = html.replace("<html", `<html class="figma-light" style="${style}"`);
 
-  // A fake main thread: the Check tab for one A5 flyer, with typical findings.
+  // Each slide sets the copy and opens one tab. The cover is the Check tab.
+  const scenes = {
+    check: {},
+    create: {
+      title: "Pages ready for print",
+      text: "Pick a format, or turn existing frames into print pages, with bleed, safe area and crop marks.",
+    },
+    colors: {
+      title: "CMYK you can trust",
+      text: "Keep black pure, give colors fixed CMYK values or spot names, and preview how each will print.",
+    },
+    export: {
+      title: "Export for any printer",
+      text: "CMYK PDFs for coated or uncoated paper, with exact trim and bleed boxes, made on your device.",
+    },
+  };
+  const sceneName = new URLSearchParams(location.search).get("scene");
+  const scene = scenes[sceneName] ? sceneName : "check";
+  if (scenes[scene].title) {
+    document.getElementById("title").textContent = scenes[scene].title;
+    document.getElementById("text").textContent = scenes[scene].text;
+    document.getElementById("points").style.display = "none";
+  }
+
+  // A flyer-like thumbnail for the Export tab, drawn as PNG bytes like Figma's export.
+  async function thumbnail(tone) {
+    const canvas = Object.assign(document.createElement("canvas"), { width: 148, height: 210 });
+    const g = canvas.getContext("2d");
+    g.fillStyle = "#f4efe6";
+    g.fillRect(0, 0, 148, 210);
+    g.fillStyle = tone;
+    g.fillRect(0, 0, 148, 120);
+    g.fillStyle = "#2d2b28";
+    g.fillRect(14, 136, 96, 12);
+    g.fillRect(14, 156, 64, 12);
+    g.fillStyle = "#b7aea2";
+    g.fillRect(14, 184, 120, 5);
+    g.fillRect(14, 194, 90, 5);
+    const blob = await new Promise((done) => canvas.toBlob(done, "image/png"));
+    return new Uint8Array(await blob.arrayBuffer());
+  }
+
+  // A fake main thread: one A5 flyer, with typical findings for the Check tab.
   const issues = [
     { pageId: "1", nodeId: "11", nodeName: "Hero photo", code: "image-medium", severity: "warning", params: { ppi: 220, min: 300 }, fix: null },
     { pageId: "1", nodeId: "12", nodeName: "Background", code: "edge-trim", severity: "warning", params: { sides: ["left", "top"] }, fix: "bleed" },
@@ -103,14 +146,34 @@
       type: "init",
       settings: {},
       ui: { lang: "en", welcomed: true, width: 360, height: 640 },
-      command: "check",
+      command: scene,
       profile: null,
       colors: { black: "pure", mappings: [] },
       selection: { selected: 1, frames: 1, printPages: 1, otherPages: 0, pageIds: ["1"] },
       fileName: "Flyer",
     }),
     check: () => ({ type: "checked", pages: [{ id: "1", name: "Flyer A5" }], issues }),
+    scan: () => ({
+      type: "scanned",
+      colors: [
+        { hex: "2D2B28", count: 14, kinds: ["text"] },
+        { hex: "E85D3A", count: 6, kinds: ["fill", "text"] },
+        { hex: "1F6F78", count: 4, kinds: ["fill"] },
+        { hex: "F4EFE6", count: 3, kinds: ["fill"] },
+        { hex: "000000", count: 2, kinds: ["stroke"] },
+      ],
+      gradients: [],
+      images: 2,
+    }),
+    pages: () => ({
+      type: "pages",
+      pages: [
+        { id: "1", name: "Flyer A5 front", w: 419.53, h: 595.28, unit: "mm", source: "printkit" },
+        { id: "2", name: "Flyer A5 back", w: 419.53, h: 595.28, unit: "mm", source: "printkit" },
+      ],
+    }),
   };
+  const tones = { 1: "#e85d3a", 2: "#1f6f78" };
   window.addEventListener("message", (event) => {
     const message = event.data && event.data.pluginMessage;
     if (!message) return;
@@ -119,5 +182,8 @@
       document.getElementById("scaled").style.height = `${message.height * 1.4}px`;
     }
     if (reply[message.type]) frame.contentWindow.postMessage({ pluginMessage: reply[message.type]() }, "*");
+    if (message.type === "thumbs") {
+      for (const id of message.ids) thumbnail(tones[id]).then((bytes) => frame.contentWindow.postMessage({ pluginMessage: { type: "thumb", id, bytes } }, "*"));
+    }
   });
 </script>

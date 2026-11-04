@@ -236,7 +236,7 @@ export function colorsView() {
   else if (scan) body.push(h("p", { class: "empty", text: t("colors.none") }));
   else if (!n) body.push(h("p", { class: "empty", text: t("check.empty") }));
   if (scan && scan.gradients.length) body.push(section(t("colors.gradients"), null, h("ul", { class: "colors" }, scan.gradients.map(gradientRow)), h("p", { class: "note", text: t("colors.gradientNote") })));
-  if (scan && scan.images) body.push(h("p", { class: "note", text: t("colors.images", { n: scan.images }) }));
+  if (scan && scan.images) body.push(h("p", { class: "note block", text: t("colors.images", { n: scan.images }) }));
 
   const status = state.proof.size ? t("colors.proofFor", { profile: profileName(state.settings.export.profile) }) : engineLoaded() ? "" : t("colors.engineNote");
   return {

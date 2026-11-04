@@ -1,6 +1,6 @@
 # Figma Community listing
 
-The text for Figma's publish dialog, field by field. The cover is `docs/cover.png`, rendered from `docs/cover.html`; the icon is `docs/icon-figma-128.png`, with a full square background because Figma rounds the corners itself. Figma takes one name, tagline and description, so the listing is in English with a short summary in German, Spanish and French at the end.
+The text for Figma's publish dialog, field by field. The cover is `docs/cover.png` and the carousel is `docs/slide-create.png`, `slide-colors.png` and `slide-export.png` in this order, all rendered from `docs/cover.html`; the icon is `docs/icon-figma-128.png`, with a full square background because Figma rounds the corners itself. Figma takes one name, tagline and description, so the listing is in English with a short summary in German, Spanish and French at the end.
 
 ## Name
 

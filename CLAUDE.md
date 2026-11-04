@@ -24,7 +24,7 @@ Figma plugin for print-ready CMYK PDFs. `README.md` covers the features, `PRIVAC
 - `-dAutoRotatePages=/None` stays, or Ghostscript rotates pages it thinks are sideways.
 - Print pages store their geometry in plugin data `printkit:page`, in points. Crop mark groups carry `printkit:part`. Pages from other plugins are recognized by a slice whose name contains "trimbox".
 - The manifest `id` is `print-kit-local` until publish.
-- `docs/cover.html` renders the 1920 × 1080 Community cover from the real `dist/ui.html`. Serve the repo root and capture it to `docs/cover.png` after a UI change.
+- `docs/cover.html` renders the 1920 × 1080 Community cover and, with `?scene=create`, `colors` or `export`, the carousel slides from the real `dist/ui.html`. Serve the repo root and capture them to `docs/cover.png` and `docs/slide-<scene>.png` after a UI change.
 - Brand: beige `#F4EFE6`, soft black `#2D2B28`, Inter with -4 % letter spacing. `docs/icon.svg` holds an iOS-style squircle, Inter Bold "P" as outlines and four crop marks, each 96 long and 48 away from the page corner on the 1024 grid. Render `docs/icon.png` (1024 px) from it after a change, plus `docs/icon-figma-128.png` with a full square background, since Figma rounds uploaded icons itself.
 - The built-in profiles are colord's CC0 FOGRA39L and FOGRA47L, taken from Arch Linux's `colord` package. ECI profiles such as PSO Coated v3 may not be redistributed. Ship no Pantone, HKS or RAL values, since they are licensed.
 - `references/` is git-ignored. It holds third-party plugin bundles reviewed for comparison, which are not ours to redistribute. Never commit them.
